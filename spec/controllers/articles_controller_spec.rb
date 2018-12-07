@@ -168,7 +168,7 @@ describe ArticlesController, type: :controller do
     end
 
     context 'when invalid params' do
-      let(:invalid_attributes) {
+      let(:invalid_attributes) do
         {
           'id' => article.id,
           'data' => {
@@ -179,7 +179,7 @@ describe ArticlesController, type: :controller do
             }
           }
         }
-      }
+      end
       subject { put :update, params: invalid_attributes }
       before do
         request.headers['authorization'] = "Bearer #{access_token.token}"
@@ -220,7 +220,7 @@ describe ArticlesController, type: :controller do
     end
 
     context 'when success request sent' do
-      let(:valid_attributes) {
+      let(:valid_attributes) do
         {
           'id' => article.id,
           'data' => {
@@ -231,7 +231,7 @@ describe ArticlesController, type: :controller do
             }
           }
         }
-      }
+      end
 
       subject { put :update, params: valid_attributes }
       before do
