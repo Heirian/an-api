@@ -5,5 +5,6 @@ FactoryBot.define do
     sequence(:title) { |t| "MyString #{t}" }
     sequence(:content) { |c| "MyText #{c}" }
     sequence(:slug) { |s| "MyString #{s}" }
+    association :user
   end
 end
