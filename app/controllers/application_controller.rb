@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::API
   AuthorizationError = Class.new(StandardError)
   rescue_from UserAuthenticator::AuthenticationError, with: :authenticator_error
