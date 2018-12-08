@@ -7,8 +7,6 @@ ruby '2.5.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.1'
-# Use sqlite3 as the database for Active Record
-gem 'sqlite3'
 # Use Puma as the app server
 gem 'puma', '~> 3.11'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -51,6 +49,8 @@ group :development, :test do
   gem 'dotenv-rails', '~> 2.5'
   # Use Pry as your rails console
   gem 'pry-rails', '~> 0.3.7'
+  # Use sqlite3 as the database for Active Record
+  gem 'sqlite3'
 end
 
 group :development do
@@ -60,5 +60,9 @@ group :development do
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
+group :production do
+  # Pg is the Ruby interface to the {PostgreSQL RDBMS}[http://www.postgresql.org/].
+  gem 'pg', '~> 1.1', '>= 1.1.3'
+end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
