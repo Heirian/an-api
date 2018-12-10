@@ -7,5 +7,6 @@ FactoryBot.define do
     url { 'http://example.com' }
     avatar_url { 'http://example.com/avatar' }
     provider { 'github' }
+    password { 'secret' }
   end
 end

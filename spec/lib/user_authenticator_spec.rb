@@ -3,62 +3,50 @@
 require 'rails_helper'
 
 describe UserAuthenticator do
-  describe '#perfom' do
-    let(:authenticator) { described_class.new('sample_code') }
-    subject { authenticator.perfom }
+  let(:user) { create(:user, login: 'jsmith', password: 'secret') }
 
-    context 'when code is incorrect' do
-      let(:error) do
-        double('Sawyer::Resource', error: 'bad_verification_code')
-      end
+  shared_examples_for 'authenticator' do
+    it 'should create and set user\'s access token' do
+      expect(authenticator.authenticator).to receive(:perfom).and_return(true)
+      expect(authenticator.authenticator).to receive(:user).at_least(:once)
+                                                           .and_return(user)
+      expect(authenticator.perfom).to eq(true)
+      expect { authenticator.access_token }.to(
+        change { AccessToken.count }.by(1)
+      )
+      expect(authenticator.access_token).to be_present
+    end
+  end
 
-      before do
-        allow_any_instance_of(Octokit::Client).to receive(
-          :exchange_code_for_token
-        ).and_return(error)
-      end
+  context 'when initialized with code' do
+    let(:authenticator) { described_class.new(code: 'sample') }
+    let(:authenticator_class) { UserAuthenticator::Oauth }
 
-      it 'should raise an error' do
-        expect { subject }.to raise_error(UserAuthenticator::AuthenticationError)
-        expect(authenticator.user).to be_nil
+    describe '#initialize' do
+      it 'should initialize proper authenticator' do
+        expect(authenticator_class).to receive(:new).with(code: 'sample')
+        authenticator
       end
     end
 
-    context 'when code is correct' do
-      let(:user_data) do
-        {
-          login: 'jsmith1',
-          url: 'http://example.com',
-          avatar_url: 'http://example.com/avatar',
-          name: 'John Smith'
-        }
-      end
+    it_behaves_like 'authenticator'
+  end
 
-      before do
-        allow_any_instance_of(Octokit::Client).to receive(
-          :exchange_code_for_token
-        ).and_return('valid_access_token')
+  context 'when initialized with login & password' do
+    let(:authenticator) do
+      described_class.new(login: 'jsmith', password: 'secret')
+    end
+    let(:authenticator_class) { UserAuthenticator::Standard }
 
-        allow_any_instance_of(Octokit::Client).to receive(
-          :user
-        ).and_return(user_data)
-      end
-
-      it 'should save the user when does not exists' do
-        expect { subject }.to change { User.count }.by(1)
-        expect(User.last.name).to eq('John Smith')
-      end
-
-      it 'should reuse already registered user' do
-        user = create(:user, user_data)
-        expect { subject }.not_to change { User.count }
-        expect(authenticator.user).to eq(user)
-      end
-
-      it "should create and set user's access token" do
-        expect { subject }.to change { AccessToken.count }.by(1)
-        expect(authenticator.access_token).to be_present
+    describe '#initialize' do
+      it 'should initialize proper authenticator' do
+        expect(authenticator_class).to receive(:new).with(
+          login: 'jsmith', password: 'secret'
+        )
+        authenticator
       end
     end
+
+    it_behaves_like 'authenticator'
   end
 end

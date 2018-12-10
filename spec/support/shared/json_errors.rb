@@ -2,8 +2,30 @@
 
 require 'rails_helper'
 
-shared_examples_for 'unauthorized_requests' do
-  let(:authentication_error) do
+shared_examples_for 'unauthorized_standard_requests' do
+  let(:authentication_standard_error) do
+    {
+      'status' => '401',
+      'source' => { 'pointer' => '/data/attributes/password' },
+      'title' => 'Invalid login or password',
+      'detail' => 'You must provide valid credentials in order ' \
+                  'to exchange them for token.'
+    }
+  end
+
+  it 'should return 401 status code' do
+    subject
+    expect(response).to have_http_status(401)
+  end
+
+  it 'should return proper error body' do
+    subject
+    expect(json['errors']).to include(authentication_standard_error)
+  end
+end
+
+shared_examples_for 'unauthorized_oauth_requests' do
+  let(:authentication_oauth_error) do
     {
       'status' => '401',
       'source' => { 'pointer' => '/code' },
@@ -14,13 +36,13 @@ shared_examples_for 'unauthorized_requests' do
   end
 
   it 'should return 401 status code' do
-    post :create
+    subject
     expect(response).to have_http_status(401)
   end
 
   it 'should return proper error body' do
-    post :create
-    expect(json['errors']).to include(authentication_error)
+    subject
+    expect(json['errors']).to include(authentication_oauth_error)
   end
 end
 
